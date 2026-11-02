@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Producto extends Model
 {
@@ -16,6 +17,7 @@ class Producto extends Model
 
     protected $casts = [
         'activo' => 'boolean',
+        'stock' => 'decimal:2',
     ];
 
     public function categoria(): BelongsTo
@@ -26,5 +28,10 @@ class Producto extends Model
     public function proveedor(): BelongsTo
     {
         return $this->belongsTo(Proveedor::class);
+    }
+
+    public function movimientos(): HasMany
+    {
+        return $this->hasMany(MovimientoInventario::class);
     }
 }

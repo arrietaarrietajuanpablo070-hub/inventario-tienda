@@ -16,6 +16,12 @@ new class extends Component
         $this->resetPage();
     }
 
+    public function eliminar(int $id): void
+    {
+        Producto::findOrFail($id)->delete();
+        session()->now('ok', 'Producto eliminado.');
+    }
+
     #[Computed]
     public function productos()
     {
@@ -28,7 +34,14 @@ new class extends Component
 ?>
 
 <div class="max-w-5xl mx-auto bg-white rounded-lg shadow p-6">
-    <h1 class="text-2xl font-bold mb-4">Inventario</h1>
+    <div class="flex justify-between items-center mb-4">
+        <h1 class="text-2xl font-bold">Inventario</h1>
+        <a href="/productos/crear" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">+ Nuevo producto</a>
+    </div>
+
+    @if (session('ok'))
+        <div class="bg-green-100 text-green-800 px-4 py-2 rounded mb-4">{{ session('ok') }}</div>
+    @endif
 
     <input
         type="text"
@@ -44,6 +57,7 @@ new class extends Component
                 <th>Categoría</th>
                 <th class="text-right">Precio venta</th>
                 <th class="text-right">Stock</th>
+                <th class="text-right">Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -54,6 +68,14 @@ new class extends Component
                     <td class="text-right">${{ number_format($p->precio_venta, 0, ',', '.') }}</td>
                     <td class="text-right {{ $p->stock <= $p->stock_minimo ? 'text-red-600 font-bold' : '' }}">
                         {{ rtrim(rtrim(number_format($p->stock, 2, ',', '.'), '0'), ',') }}
+                    </td>
+                    <td class="text-right whitespace-nowrap">
+                        <a href="/productos/{{ $p->id }}/editar" class="text-blue-600 hover:underline">Editar</a>
+                        <button
+                            wire:click="eliminar({{ $p->id }})"
+                            wire:confirm="¿Seguro que quieres eliminar este producto?"
+                            class="text-red-600 hover:underline ml-3"
+                        >Eliminar</button>
                     </td>
                 </tr>
             @endforeach
