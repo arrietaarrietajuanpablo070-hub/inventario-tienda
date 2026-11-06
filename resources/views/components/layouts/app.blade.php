@@ -12,6 +12,7 @@
             <span class="font-bold text-lg">Mi Tienda</span>
             <a href="{{ route('productos.index') }}" class="hover:underline {{ request()->is('productos*') ? 'underline font-semibold' : '' }}">Inventario</a>
             <a href="{{ route('categorias.index') }}" class="hover:underline {{ request()->is('categorias*') ? 'underline font-semibold' : '' }}">Categorías</a>
+            <a href="{{ route('proveedores.index') }}" class="hover:underline {{ request()->is('proveedores*') ? 'underline font-semibold' : '' }}">Proveedores</a>
             <a href="{{ route('movimientos.index') }}" class="hover:underline {{ request()->is('movimientos*') ? 'underline font-semibold' : '' }}">Movimientos</a>
         </div>
     </nav>
