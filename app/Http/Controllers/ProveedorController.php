@@ -64,6 +64,12 @@ class ProveedorController extends Controller
         return redirect()->route('proveedores.index')
             ->with('ok', 'Proveedor eliminado. Sus productos quedaron sin proveedor.');
     }
+        public function show(Proveedor $proveedor): View
+    {
+        $productos = $proveedor->productos()->orderBy('nombre')->paginate(10);
+
+        return view('proveedores.show', compact('proveedor', 'productos'));
+    }
 
     private function reglas(): array
     {

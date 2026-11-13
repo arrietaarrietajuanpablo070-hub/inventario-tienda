@@ -16,13 +16,12 @@ Route::prefix('productos')->name('productos.')->controller(ProductoController::c
     Route::delete('/{producto}', 'destroy')->name('destroy');
 });
 
-// Categorías (GET, POST, PUT/PATCH y DELETE en una sola línea)
-Route::resource('categorias', CategoriaController::class)->except('show');
+// Categorías: CRUD completo (index, create, store, show, edit, update, destroy)
+Route::resource('categorias', CategoriaController::class);
 
-// Proveedores
+// Proveedores: CRUD completo
 Route::resource('proveedores', ProveedorController::class)
-    ->parameters(['proveedores' => 'proveedor'])
-    ->except('show');
+    ->parameters(['proveedores' => 'proveedor']);
 
 // Movimientos de inventario
 Route::prefix('movimientos')->name('movimientos.')->controller(MovimientoController::class)->group(function () {

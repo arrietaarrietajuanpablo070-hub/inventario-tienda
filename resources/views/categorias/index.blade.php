@@ -29,7 +29,7 @@
             <tbody>
                 @forelse ($categorias as $c)
                     <tr class="border-b">
-                        <td class="py-2">{{ $c->nombre }}</td>
+                       <td class="py-2"><a href="{{ route('categorias.show', $c) }}" class="text-green-700 hover:underline">{{ $c->nombre }}</a></td> 
                         <td class="text-gray-600">{{ $c->descripcion }}</td>
                         <td class="text-right">{{ number_format($c->productos_count, 0, ',', '.') }}</td>
                         <td class="text-right whitespace-nowrap">

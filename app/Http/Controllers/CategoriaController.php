@@ -40,6 +40,12 @@ class CategoriaController extends Controller
         return redirect()->route('categorias.index')
             ->with('ok', 'Categoría creada correctamente.');
     }
+        public function show(Categoria $categoria): View
+    {
+        $productos = $categoria->productos()->orderBy('nombre')->paginate(10);
+
+        return view('categorias.show', compact('categoria', 'productos'));
+    }
 
     public function edit(Categoria $categoria): View
     {

@@ -27,7 +27,7 @@
             <tbody>
                 @forelse ($proveedores as $p)
                     <tr class="border-b">
-                        <td class="py-2">{{ $p->nombre }}</td>
+                        <td class="py-2"><a href="{{ route('proveedores.show', $p) }}" class="text-green-700 hover:underline">{{ $p->nombre }}</a></td>
                         <td>{{ $p->telefono }}</td>
                         <td>{{ $p->email }}</td>
                         <td class="text-right">{{ number_format($p->productos_count, 0, ',', '.') }}</td>
