@@ -14,6 +14,7 @@
             <a href="{{ route('categorias.index') }}" class="hover:underline {{ request()->is('categorias*') ? 'underline font-semibold' : '' }}">Categorías</a>
             <a href="{{ route('proveedores.index') }}" class="hover:underline {{ request()->is('proveedores*') ? 'underline font-semibold' : '' }}">Proveedores</a>
             <a href="{{ route('movimientos.index') }}" class="hover:underline {{ request()->is('movimientos*') ? 'underline font-semibold' : '' }}">Movimientos</a>
+                        <a href="{{ route('pos.index') }}" class="hover:underline {{ request()->is('pos*') ? 'underline font-semibold' : '' }}">Caja</a>
         </div>
     </nav>
 
