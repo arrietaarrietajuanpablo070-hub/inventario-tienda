@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MovimientoController;
 use App\Http\Controllers\PosController;
 use App\Http\Controllers\ProductoController;
@@ -9,23 +10,35 @@ use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\VentaController;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/pos');
-
-// CRUD completo: GET, POST, PUT/PATCH y DELETE
-Route::resource('productos', ProductoController::class);
-Route::resource('categorias', CategoriaController::class);
-Route::resource('proveedores', ProveedorController::class)
-    ->parameters(['proveedores' => 'proveedor']);
-
-// Movimientos de inventario
-Route::prefix('movimientos')->name('movimientos.')->controller(MovimientoController::class)->group(function () {
-    Route::get('/', 'index')->name('index');
+// Solo para quien NO ha iniciado sesión
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LoginController::class, 'create'])->name('login');
+    Route::post('/login', [LoginController::class, 'store']);
 });
 
-// Caja (POS)
-Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
+// Para cualquier usuario con sesión
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
+    Route::redirect('/', '/pos');
 
-// Ventas y reportes
-Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index');
-Route::get('/ventas/{venta}', [VentaController::class, 'show'])->name('ventas.show');
-Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes.index');
+    // Administrador y cajero
+    Route::middleware('rol:admin,cajero')->group(function () {
+        Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
+        Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index');
+        Route::get('/ventas/{venta}', [VentaController::class, 'show'])->name('ventas.show');
+    });
+
+    // Solo administrador
+    Route::middleware('rol:admin')->group(function () {
+        Route::resource('productos', ProductoController::class);
+        Route::resource('categorias', CategoriaController::class);
+        Route::resource('proveedores', ProveedorController::class)
+            ->parameters(['proveedores' => 'proveedor']);
+
+        Route::prefix('movimientos')->name('movimientos.')->controller(MovimientoController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+        });
+
+        Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes.index');
+    });
+});

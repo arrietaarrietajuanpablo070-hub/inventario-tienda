@@ -49,5 +49,7 @@ return [
         'desde' => 'fecha inicial',
         'hasta' => 'fecha final',
         'metodo' => 'método de pago',
+        'password' => 'contraseña',
+
     ],
 ];
