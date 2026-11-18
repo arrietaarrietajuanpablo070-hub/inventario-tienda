@@ -9,7 +9,8 @@ return [
     'unique' => 'El valor de :attribute ya está registrado.',
     'exists' => 'El valor seleccionado en :attribute no es válido.',
     'in' => 'El valor seleccionado en :attribute no es válido.',
-
+        'date' => 'El campo :attribute debe ser una fecha válida.',
+    'after_or_equal' => 'El campo :attribute debe ser una fecha igual o posterior a :date.',
     'max' => [
         'numeric' => 'El campo :attribute no puede ser mayor que :max.',
         'string' => 'El campo :attribute no puede tener más de :max caracteres.',
@@ -21,6 +22,7 @@ return [
         'string' => 'El campo :attribute debe tener al menos :min caracteres.',
         'array' => 'El campo :attribute debe tener al menos :min elementos.',
         'file' => 'El archivo :attribute debe pesar al menos :min kilobytes.',
+        
     ],
     'gt' => [
         'numeric' => 'El campo :attribute debe ser mayor que :value.',
@@ -44,5 +46,8 @@ return [
         'cantidad' => 'cantidad',
         'tipo' => 'tipo',
         'motivo' => 'motivo',
+        'desde' => 'fecha inicial',
+        'hasta' => 'fecha final',
+        'metodo' => 'método de pago',
     ],
 ];
