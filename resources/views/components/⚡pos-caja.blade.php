@@ -218,18 +218,17 @@ new class extends Component
     }
 };
 ?>
-
-<div class="max-w-6xl mx-auto grid md:grid-cols-5 gap-6">
-    {{-- Columna izquierda: buscador y carrito --}}
-    <div class="md:col-span-3 bg-white rounded-lg shadow p-6">
-        <h1 class="text-2xl font-bold mb-4">Caja</h1>
+<div class="max-w-6xl mx-auto grid lg:grid-cols-3 gap-6 items-start">
+    {{-- Venta en curso --}}
+    <div class="lg:col-span-2 bg-white border rounded-lg p-6">
+        <h1 class="text-xl font-semibold mb-4">Venta en curso</h1>
 
         <input
             type="text"
             wire:model.live.debounce.250ms="buscar"
             wire:keydown.enter="entrar"
-            placeholder="Busca por nombre o escanea el código de barras..."
-            class="w-full border rounded px-3 py-2"
+            placeholder="Nombre del producto o código de barras"
+            class="w-full border rounded px-3 py-2.5"
             autofocus
         >
 
@@ -238,10 +237,10 @@ new class extends Component
                 @foreach ($this->resultados as $r)
                     <li wire:key="res-{{ $r->id }}">
                         <button type="button" wire:click="agregar({{ $r->id }})"
-                                class="w-full text-left px-3 py-2 hover:bg-gray-100 flex justify-between">
+                                class="w-full text-left px-3 py-2 hover:bg-green-50 flex justify-between gap-4">
                             <span>{{ $r->nombre }}</span>
-                            <span class="text-gray-500 text-sm">
-                                ${{ number_format($r->precio_venta, 0, ',', '.') }} · stock {{ rtrim(rtrim(number_format($r->stock, 2, ',', '.'), '0'), ',') }}
+                            <span class="text-gray-500 text-sm whitespace-nowrap">
+                                ${{ number_format($r->precio_venta, 0, ',', '.') }} · quedan {{ rtrim(rtrim(number_format($r->stock, 2, ',', '.'), '0'), ',') }}
                             </span>
                         </button>
                     </li>
@@ -249,15 +248,15 @@ new class extends Component
             </ul>
         @endif
 
-        @error('carrito') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
+        @error('carrito') <p class="text-alerta text-sm mt-2">{{ $message }}</p> @enderror
 
         <table class="w-full text-left mt-4">
             <thead>
-                <tr class="border-b font-semibold">
-                    <th class="py-2">Producto</th>
-                    <th class="text-right">Precio</th>
-                    <th class="text-right">Cant.</th>
-                    <th class="text-right">Subtotal</th>
+                <tr class="border-b">
+                    <th class="py-2 font-semibold">Producto</th>
+                    <th class="text-right font-semibold">Precio</th>
+                    <th class="text-center font-semibold">Cantidad</th>
+                    <th class="text-right font-semibold">Subtotal</th>
                     <th></th>
                 </tr>
             </thead>
@@ -266,7 +265,7 @@ new class extends Component
                     <tr class="border-b" wire:key="item-{{ $id }}">
                         <td class="py-2">{{ $item['nombre'] }}</td>
                         <td class="text-right">${{ number_format($item['precio'], 0, ',', '.') }}</td>
-                                                <td class="text-right whitespace-nowrap">
+                        <td class="text-center whitespace-nowrap">
                             <div class="inline-flex items-center gap-1">
                                 <button type="button"
                                         wire:click="actualizar({{ $id }}, {{ $item['cantidad'] - 1 }})"
@@ -279,79 +278,97 @@ new class extends Component
                                         class="w-8 h-8 border rounded hover:bg-gray-100">+</button>
                             </div>
                         </td>
-                        <td class="text-right">${{ number_format($item['precio'] * $item['cantidad'], 0, ',', '.') }}</td>
+                        <td class="text-right font-semibold">${{ number_format($item['precio'] * $item['cantidad'], 0, ',', '.') }}</td>
                         <td class="text-right">
-                            <button type="button" wire:click="quitar({{ $id }})" class="text-red-600 hover:underline">Quitar</button>
+                            <button type="button" wire:click="quitar({{ $id }})" class="text-alerta hover:underline">Quitar</button>
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="5" class="py-6 text-center text-gray-500">El carrito está vacío. Busca un producto para empezar.</td></tr>
+                    <tr><td colspan="5" class="py-8 text-center text-gray-500">Busca un producto o escanea su código para empezar la venta.</td></tr>
                 @endforelse
             </tbody>
         </table>
     </div>
 
-    {{-- Columna derecha: cobro o comprobante --}}
-    <div class="md:col-span-2 bg-white rounded-lg shadow p-6">
+    {{-- Cobro o comprobante --}}
+    <div class="lg:sticky lg:top-6">
         @if ($this->ultimaVenta)
-            <div class="bg-green-50 border border-green-200 rounded p-4">
-                <h2 class="text-xl font-bold text-green-800">Venta #{{ $this->ultimaVenta->id }} registrada</h2>
-                <p class="text-sm text-gray-600 mb-3">{{ $this->ultimaVenta->created_at->format('d/m/Y H:i') }}</p>
+            @php $v = $this->ultimaVenta; @endphp
 
-                <table class="w-full text-sm mb-3">
-                    @foreach ($this->ultimaVenta->detalles as $d)
-                        <tr wire:key="det-{{ $d->id }}">
-                            <td class="py-1">
-                                {{ rtrim(rtrim(number_format($d->cantidad, 2, ',', '.'), '0'), ',') }} × {{ $d->producto->nombre }}
-                            </td>
-                            <td class="text-right">${{ number_format($d->subtotal, 0, ',', '.') }}</td>
-                        </tr>
-                    @endforeach
-                </table>
-
-                <div class="border-t pt-2 space-y-1">
-                    <div class="flex justify-between font-bold"><span>Total</span><span>${{ number_format($this->ultimaVenta->total, 0, ',', '.') }}</span></div>
-                    <div class="flex justify-between"><span>Pago ({{ $this->ultimaVenta->metodo_pago }})</span><span>${{ number_format($this->ultimaVenta->pago, 0, ',', '.') }}</span></div>
-                    <div class="flex justify-between"><span>Cambio</span><span>${{ number_format($this->ultimaVenta->cambio, 0, ',', '.') }}</span></div>
+            <div class="tirilla">
+                <div class="text-center">
+                    <p class="font-bold text-base">TIENDA LOS PAISAS</p>
+                    <p class="text-xs">Venta N.° {{ $v->id }}</p>
+                    <p class="text-xs">{{ $v->created_at->format('d/m/Y H:i') }}</p>
                 </div>
+
+                <hr class="my-3 border-t border-dashed">
+
+                <div class="space-y-2 text-sm">
+                    @foreach ($v->detalles as $d)
+                        <div wire:key="det-{{ $d->id }}">
+                            <div>{{ $d->producto->nombre }}</div>
+                            <div class="flex justify-between">
+                                <span>{{ rtrim(rtrim(number_format($d->cantidad, 2, ',', '.'), '0'), ',') }} x ${{ number_format($d->precio_unitario, 0, ',', '.') }}</span>
+                                <span>${{ number_format($d->subtotal, 0, ',', '.') }}</span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <hr class="my-3 border-t border-dashed">
+
+                <div class="space-y-1 text-sm">
+                    <div class="flex justify-between text-base font-bold"><span>TOTAL</span><span>${{ number_format($v->total, 0, ',', '.') }}</span></div>
+                    <div class="flex justify-between"><span>Pago ({{ $v->metodo_pago }})</span><span>${{ number_format($v->pago, 0, ',', '.') }}</span></div>
+                    <div class="flex justify-between"><span>Cambio</span><span>${{ number_format($v->cambio, 0, ',', '.') }}</span></div>
+                </div>
+
+                <p class="text-center text-xs mt-5">Gracias por su compra</p>
             </div>
 
             <div class="flex gap-3 mt-4">
-                <button type="button" wire:click="nueva" class="flex-1 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Nueva venta</button>
-                <button type="button" onclick="window.print()" class="px-4 py-2 rounded border">Imprimir</button>
+                <button type="button" wire:click="nueva" class="flex-1 bg-acento hover:bg-acento-oscuro text-tinta font-semibold px-4 py-3 rounded">Nueva venta</button>
+                <button type="button" onclick="window.print()" class="px-4 py-3 rounded border bg-white hover:bg-gray-50">Imprimir</button>
             </div>
         @else
-            <h2 class="text-xl font-bold mb-3">Cobro</h2>
+            <div class="bg-white border rounded-lg p-6">
+                <p class="text-sm text-gray-500">Total a cobrar</p>
+                <p class="text-4xl font-semibold mb-5">${{ number_format($this->total, 0, ',', '.') }}</p>
 
-            <div class="flex justify-between text-2xl font-bold mb-4">
-                <span>Total</span>
-                <span>${{ number_format($this->total, 0, ',', '.') }}</span>
-            </div>
-
-            <label class="block text-sm font-semibold">Método de pago</label>
-            <select wire:model.live="metodo_pago" class="w-full border rounded px-3 py-2 mb-3">
-                <option value="efectivo">Efectivo</option>
-                <option value="nequi">Nequi</option>
-                <option value="tarjeta">Tarjeta</option>
-            </select>
-
-            @if ($metodo_pago === 'efectivo')
-                <label class="block text-sm font-semibold">Pago del cliente</label>
-                <input type="number" step="50" wire:model.live.debounce.300ms="pago" class="w-full border rounded px-3 py-2">
-                @error('pago') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
-
-                <div class="flex justify-between mt-3 text-lg">
-                    <span>Cambio</span>
-                    <span class="font-bold">${{ number_format($this->cambio, 0, ',', '.') }}</span>
+                <p class="text-sm font-semibold mb-1">Método de pago</p>
+                <div class="grid grid-cols-3 gap-2 mb-4">
+                    @foreach (['efectivo' => 'Efectivo', 'nequi' => 'Nequi', 'tarjeta' => 'Tarjeta'] as $valor => $texto)
+                        <button type="button" wire:click="$set('metodo_pago', '{{ $valor }}')"
+                                class="rounded border px-2 py-2 text-sm {{ $metodo_pago === $valor ? 'bg-green-700 border-green-700 text-white font-semibold' : 'bg-white hover:bg-gray-50' }}">
+                            {{ $texto }}
+                        </button>
+                    @endforeach
                 </div>
-            @endif
 
-            <div class="flex gap-3 mt-5">
+                @if ($metodo_pago === 'efectivo')
+                    <label class="block text-sm font-semibold mb-1">Pago del cliente</label>
+                    <input type="number" step="50" wire:model.live.debounce.300ms="pago" class="w-full border rounded px-3 py-2">
+                    @error('pago') <p class="text-alerta text-sm mt-1">{{ $message }}</p> @enderror
+
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        <button type="button" wire:click="$set('pago', {{ round($this->total) }})" class="rounded border px-3 py-1 text-sm hover:bg-gray-50">Exacto</button>
+                        @foreach ([10000, 20000, 50000] as $billete)
+                            <button type="button" wire:click="$set('pago', {{ $billete }})" class="rounded border px-3 py-1 text-sm hover:bg-gray-50">${{ number_format($billete, 0, ',', '.') }}</button>
+                        @endforeach
+                    </div>
+
+                    <div class="flex justify-between mt-4 text-lg">
+                        <span>Cambio</span>
+                        <span class="font-semibold">${{ number_format($this->cambio, 0, ',', '.') }}</span>
+                    </div>
+                @endif
+
                 <button type="button" wire:click="cobrar" wire:loading.attr="disabled"
-                        class="flex-1 bg-green-600 text-white px-4 py-3 rounded hover:bg-green-700 font-semibold">
+                        class="mt-5 w-full bg-acento hover:bg-acento-oscuro text-tinta font-semibold text-lg px-4 py-3 rounded">
                     Cobrar
                 </button>
-                <button type="button" wire:click="vaciar" class="px-4 py-3 rounded border">Vaciar</button>
+                <button type="button" wire:click="vaciar" class="mt-2 w-full text-sm text-gray-500 hover:underline">Vaciar venta</button>
             </div>
         @endif
     </div>
