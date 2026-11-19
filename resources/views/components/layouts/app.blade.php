@@ -10,6 +10,8 @@
 <body class="bg-gray-100 antialiased">
     @php
         $rol = auth()->user()?->rol;
+        $nombreRol = ['admin' => 'Administrador', 'cajero' => 'Cajero', 'cliente' => 'Cliente'][$rol] ?? $rol;
+        $personal = in_array($rol, ['admin', 'cajero'], true);
         $enlace = fn ($patron) => 'block rounded px-3 py-2 text-sm whitespace-nowrap hover:bg-green-800 '
             . (request()->is($patron) ? 'bg-green-800 font-semibold text-white' : 'text-green-100');
         $grupo = 'hidden md:block px-3 pt-5 pb-1 text-xs text-green-200';
@@ -17,15 +19,17 @@
 
     <div class="md:flex md:min-h-screen">
         <aside class="bg-green-700 text-white md:w-60 md:shrink-0 md:sticky md:top-0 md:h-screen md:flex md:flex-col print:hidden">
-            <a href="{{ route('pos.index') }}" class="block px-5 pt-5 pb-3">
+            <a href="/" class="block px-5 pt-5 pb-3">
                 <span class="block text-sm text-green-200 leading-none">Tienda</span>
                 <span class="block text-xl font-bold leading-tight">Los Paisas</span>
             </a>
 
             <nav class="flex md:block gap-1 overflow-x-auto px-3 pb-3 md:pb-0 md:flex-1 md:overflow-y-auto">
-                <p class="{{ $grupo }}">Venta</p>
-                <a href="{{ route('pos.index') }}" class="{{ $enlace('pos*') }}">Caja</a>
-                <a href="{{ route('ventas.index') }}" class="{{ $enlace('ventas*') }}">Ventas</a>
+                @if ($personal)
+                    <p class="{{ $grupo }}">Venta</p>
+                    <a href="{{ route('pos.index') }}" class="{{ $enlace('pos*') }}">Caja</a>
+                    <a href="{{ route('ventas.index') }}" class="{{ $enlace('ventas*') }}">Ventas</a>
+                @endif
 
                 @if ($rol === 'admin')
                     <p class="{{ $grupo }}">Almacén</p>
@@ -36,13 +40,19 @@
 
                     <p class="{{ $grupo }}">Análisis</p>
                     <a href="{{ route('reportes.index') }}" class="{{ $enlace('reportes*') }}">Reportes</a>
+
+                    <p class="{{ $grupo }}">Administración</p>
+                    <a href="{{ route('usuarios.index') }}" class="{{ $enlace('usuarios*') }}">Usuarios</a>
                 @endif
+
+                <p class="{{ $grupo }}">Para clientes</p>
+                <a href="{{ route('catalogo.index') }}" class="{{ $enlace('catalogo*') }}">Catálogo</a>
             </nav>
 
             <div class="flex items-center justify-between gap-3 border-t border-green-800 px-5 py-3 text-sm">
                 <div class="leading-tight">
                     <p class="font-semibold">{{ auth()->user()?->name }}</p>
-                    <p class="text-green-200 text-xs">{{ $rol === 'admin' ? 'Administrador' : 'Cajero' }}</p>
+                    <p class="text-green-200 text-xs">{{ $nombreRol }}</p>
                 </div>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

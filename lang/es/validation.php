@@ -9,7 +9,8 @@ return [
     'unique' => 'El valor de :attribute ya está registrado.',
     'exists' => 'El valor seleccionado en :attribute no es válido.',
     'in' => 'El valor seleccionado en :attribute no es válido.',
-        'date' => 'El campo :attribute debe ser una fecha válida.',
+    'date' => 'El campo :attribute debe ser una fecha válida.',
+    'confirmed' => 'La confirmación de :attribute no coincide.',
     'after_or_equal' => 'El campo :attribute debe ser una fecha igual o posterior a :date.',
     'max' => [
         'numeric' => 'El campo :attribute no puede ser mayor que :max.',
@@ -50,6 +51,10 @@ return [
         'hasta' => 'fecha final',
         'metodo' => 'método de pago',
         'password' => 'contraseña',
+                'name' => 'nombre',
+        'rol' => 'rol',
+        'password_confirmation' => 'confirmación de la contraseña',
+        'q' => 'búsqueda',
 
     ],
 ];

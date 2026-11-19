@@ -19,7 +19,7 @@
             <form method="POST" action="{{ route('login') }}" class="w-full max-w-sm space-y-4">
                 @csrf
                 <h2 class="text-2xl font-semibold">Entrar al sistema</h2>
-
+                       <p class="text-sm text-center">¿Primera vez? <a href="{{ route('registro') }}" class="text-green-700 font-semibold hover:underline">Crea tu cuenta de cliente</a></p>
                 <div>
                     <label class="block text-sm font-semibold mb-1">Correo</label>
                     <input type="email" name="email" value="{{ old('email') }}" autofocus class="w-full border rounded px-3 py-2 bg-white">
