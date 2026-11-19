@@ -30,7 +30,11 @@ class LoginController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('pos.index'));
+                $destino = $request->user()->rol === 'cliente'
+            ? route('catalogo.index')
+            : route('pos.index');
+
+        return redirect()->intended($destino);
     }
 
     public function destroy(Request $request): RedirectResponse
